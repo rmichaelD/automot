@@ -1,16 +1,15 @@
 import numpy as np
-import random
 
 #unique_ids = random.sample(range(1, 10000), 1000)
 
 class Unit:
-    def __init__(self, Warudo, spawn_coord, move_target = (-1,-1)):
+    def __init__(self, Warudo, spawn_coord, v_range = 0, move_target = (-1,-1)):
         self.warudo = Warudo
         #self.id = unique_ids.pop()
         self.size = (self.warudo.square_size[0], self.warudo.square_size[1])
         self.x, self.y = list(spawn_coord)
         self.warudo.add_unit(self)
-        self.v_range = 2
+        self.v_range = v_range
         if move_target == (-1,-1):
             self.move_target = [self.x, self.y]
         else:
@@ -76,9 +75,9 @@ class Unit:
                 D_grid_x = self.x + i - self.v_range
                 D_grid_y = self.y + j - self.v_range
                 if D_grid_x < 0 or D_grid_x >= self.warudo.grid_size[0] or D_grid_y < 0 or D_grid_y >= self.warudo.grid_size[1]:
-                    D_grid[i,j] = 0
+                    D_grid[i,j] = self.get_distance(D_grid_x, D_grid_y)
                 else:
-                    D_grid[i,j] = self.get_distance(D_grid_x, D_grid_y)/self.warudo.grid_size[0]
+                    D_grid[i,j] = self.get_distance(D_grid_x, D_grid_y)
         return D_grid
         
     def valide_move_target(self, tx_new, ty_new):
