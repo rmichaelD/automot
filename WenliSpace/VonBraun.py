@@ -36,8 +36,8 @@ class VonBraun():
                                                self.square_size[0], self.square_size[1])
             pygame.draw.rect(self.display, grid_color, rect, 1)
     
-    def add_unit(self, p_x, p_y):
-        self.unit = Unit.Unit(self.warudo, (p_x, p_y))
+    def add_unit(self, p_x, p_y, v_range):
+        self.unit = Unit.Unit(self.warudo, (p_x, p_y), v_range)
         u_rect = pygame.Rect(self.unit.x*self.square_size[0], self.unit.y*self.square_size[1],
                                                  self.unit.size[0], self.unit.size[1])
         pygame.draw.rect(self.display, square_color, u_rect)
@@ -74,14 +74,15 @@ class VonBraun():
         else:
             return 1
             
-    def make(self, n_obs):
+    def make(self, n_obs, v_range):
         #Create obstacles
         self.n_obs = n_obs
+        self.v_range = v_range
         self.generate_obs(n_obs)
         
         #Add hero unit
         px_rand, py_rand = random.randint(0, self.grid_size[0]-1), random.randint(0, self.grid_size[1]-1)
-        self.add_unit(px_rand, py_rand)
+        self.add_unit(px_rand, py_rand, v_range)
         
         #Set units target
         mtx_rand, mty_rand = random.randint(0,self.grid_size[0]-1), random.randint(0,self.grid_size[1]-1)
@@ -107,7 +108,6 @@ class VonBraun():
         #Check if target reached
         done = False
         if [self.unit.x, self.unit.y] == self.unit.move_target:
-            print("Target reached!")
             done = True
                         
         #Get unit sensors
@@ -127,7 +127,7 @@ class VonBraun():
         if show_display: self.set_display()
         self.n_step = 0
         self.warudo = Warudo.Warudo(self.grid_size, self.window_size)
-        self.make(self.n_obs)
+        self.make(self.n_obs, self.v_range)
         layer_1 = self.unit.get_view_grid()
         layer_2 = self.unit.get_distance_grid()
         
@@ -135,5 +135,4 @@ class VonBraun():
         
     def get_reward(self):
         # ( D_init - D_step_n ) + ( N_step_min - step_n )
-        return 2*self.d_init - self.unit.get_distance() - self.n_step
-        
+        return (self.d_init - self.unit.get_distance())/(self.d_init+1)
