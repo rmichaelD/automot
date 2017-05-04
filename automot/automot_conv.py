@@ -3,7 +3,8 @@ from WenliSpace import VonBraun
 import time
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow.contrib.layers import fully_connected, conv2d, flatten, avg_pool2d, dropout
+from tensorflow.contrib.layers import fully_connected, conv2d, flatten,
+avg_pool2d, dropout
 
 show_display = False
 
