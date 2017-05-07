@@ -3,10 +3,10 @@ from WenliSpace import VonBraun
 import time
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow.contrib.layers import fully_connected, conv2d, flatten,
-avg_pool2d, dropout
+from tensorflow.contrib.layers import fully_connected, conv2d, flatten
+from tensorflow.contrib.layers import avg_pool2d, dropout
 
-show_display = False
+show_display = True
 
 step_limit = 10
 n_obs = 20
@@ -17,21 +17,21 @@ v_range = 4
 
 inputs_shape = [None, v_range*2 + 1, v_range*2 + 1, 3] # [batch, height, width, channels]
 
-conv_1_n_filter = 16
+conv_1_n_filter = 6
 conv_1_kernel_size = 3 # [height, width]
 conv_1_stride = 3 # [height, width]
 
 pool_1_kernel_size = 2
 pool_1_stride = 1
 
-conv_2_n_filter = 64
+conv_2_n_filter = 12
 conv_2_kernel_size = 2 # [height, width]
 conv_2_stride = 1 # [height, width]
 
 pool_2_kernel_size = 2
 pool_2_stride = 1
 
-conv_3_n_filter = 128
+conv_3_n_filter = 24
 conv_3_kernel_size = 2 # [height, width]
 conv_3_stride = 1 # [height, width]
 
@@ -39,7 +39,7 @@ conv_4_n_filter = 243
 conv_4_kernel_size = 4 # [height, width]
 conv_4_stride = 1 # [height, width]
 
-fully_size = 1024
+fully_size = 64
 dropout_keep_prob = 0.80
 
 n_outputs = 9
@@ -126,7 +126,7 @@ discount_rate = 0.05
 
 
 env = VonBraun.VonBraun(grid_size, window_scale, show_display = show_display)
-env.make(course = "classic", n_obs = 0) # course = "classic", "random"
+env.make(course = "random", n_obs = 0) # course = "classic", "random"
 success_rates = []
 
 with tf.Session() as sess:
@@ -175,7 +175,7 @@ with tf.Session() as sess:
         print("mean_gradients", np.mean(decayed_gradients))
         print("Target reached! [" + str(success) + "/" + str(n_games_per_update) + "]")
         success_rate = success/n_games_per_update
-        success_rates.append(success_rate)
+       success_rates.append(success_rate)
         print("Iteration", iteration, "; Success", success_rate)
         print("-----------------------------------------------")
         sess.run(training_op, feed_dict=feed_dict)

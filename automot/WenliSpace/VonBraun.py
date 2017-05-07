@@ -138,19 +138,23 @@ class VonBraun():
         for x_i in range(3, self.grid_size[0] - 4):
             y_i = 3
             unit = Unit.Unit(self.warudo, (x_i,y_i))
-            obs_rect = pygame.Rect(unit.x*self.square_size[0],
-                                   unit.y*self.square_size[1],
-                                   self.square_size[0], self.square_size[1])
-            pygame.draw.rect(self.display, obs_color, obs_rect)
+            if self.show_display:
+                obs_rect = pygame.Rect(unit.x*self.square_size[0],
+                                       unit.y*self.square_size[1],
+                                       self.square_size[0],
+                                       self.square_size[1])
+                pygame.draw.rect(self.display, obs_color, obs_rect)
  
         #Set obstacle in the y line    
         for y_i in range(3, self.grid_size[1] - 6):
             x_i = self.grid_size[0] - 4
             unit = Unit.Unit(self.warudo, (x_i,y_i))
-            obs_rect = pygame.Rect(unit.x*self.square_size[0],
-                                   unit.y*self.square_size[1],
-                                   self.square_size[0], self.square_size[1])
-            pygame.draw.rect(self.display, obs_color, obs_rect)
+            if self.show_display:
+                obs_rect = pygame.Rect(unit.x*self.square_size[0],
+                                       unit.y*self.square_size[1],
+                                       self.square_size[0],
+                                       self.square_size[1])
+                pygame.draw.rect(self.display, obs_color, obs_rect)
 
     def step(self, m_x, m_y):
         self.n_step += 1
