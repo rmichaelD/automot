@@ -55,7 +55,8 @@ def discount_rewards(rewards, discount_rate):
     discounted_rewards = np.empty(len(rewards))
     cumulative_rewards = 0
     for step in reversed(range(len(rewards))):
-        cumulative_rewards = rewards[step] + cumulative_rewards * discount_rate
+        cumulative_rewards = rewards[step] \
+                             + cumulative_rewards * discount_rate
         discounted_rewards[step] = cumulative_rewards
     return discounted_rewards
 
@@ -73,31 +74,42 @@ initializer = tf.contrib.layers.xavier_initializer_conv2d()
 X = tf.placeholder(tf.float32, shape = inputs_shape, name = 'X')
 
 with tf.name_scope("dnn"):
-    conv_1 = conv2d(X, conv_1_n_filter, conv_1_kernel_size, conv_1_stride, padding = "VALID",
-                    activation_fn = tf.nn.elu, weights_initializer = initializer)
-#    pool_1 = avg_pool2d(conv_1, pool_1_kernel_size, pool_1_stride, padding = "VALID")
+    conv_1 = conv2d(X, conv_1_n_filter, conv_1_kernel_size, conv_1_stride,
+                    padding = "VALID", activation_fn = tf.nn.elu,
+                    weights_initializer = initializer)
+
+#    pool_1 = avg_pool2d(conv_1, pool_1_kernel_size, pool_1_stride,
+#                        padding = "VALID")
 #    
-    conv_2 = conv2d(conv_1, conv_2_n_filter, conv_2_kernel_size, conv_2_stride, padding = "VALID",
-                    activation_fn = tf.nn.elu, weights_initializer = initializer)
-#    pool_2 = avg_pool2d(conv_2, pool_2_kernel_size, pool_2_stride, padding = "VALID")
+    conv_2 = conv2d(conv_1, conv_2_n_filter, conv_2_kernel_size,
+                    conv_2_stride, padding = "VALID",
+                    activation_fn = tf.nn.elu,
+                    weights_initializer = initializer)
+
+#    pool_2 = avg_pool2d(conv_2, pool_2_kernel_size, pool_2_stride,
+#                        padding = "VALID")
 #
-    conv_3 = conv2d(conv_2, conv_3_n_filter, conv_3_kernel_size, conv_3_stride, padding = "VALID",
-                    activation_fn = tf.nn.elu, weights_initializer = initializer)
+    conv_3 = conv2d(conv_2, conv_3_n_filter, conv_3_kernel_size,
+                    conv_3_stride, padding = "VALID",
+                    activation_fn = tf.nn.elu,
+                    weights_initializer = initializer)
 #
-#    conv_4 = conv2d(conv_3, conv_4_n_filter, conv_4_kernel_size, conv_4_stride, padding = "VALID",
-#                    activation_fn = tf.nn.elu, weights_initializer = initializer)    
-    
-    fully = fully_connected(flatten(conv_3), fully_size, activation_fn = tf.nn.elu,
-                     weights_initializer = initializer)
+#    conv_4 = conv2d(conv_3, conv_4_n_filter, conv_4_kernel_size,
+#                    conv_4_stride, padding = "VALID",
+#                    activation_fn = tf.nn.elu,
+#                    weights_initializer = initializer)
+
+    fully = fully_connected(flatten(conv_3), fully_size,
+                            activation_fn = tf.nn.elu,
+                            weights_initializer = initializer)
     dropout_fully = dropout(fully, dropout_keep_prob)
-    
     logits = fully_connected(dropout_fully, n_outputs, activation_fn = None,
                      weights_initializer = initializer)
     outputs = tf.nn.softmax(logits)
     action = tf.multinomial(tf.log(outputs), num_samples=1)
 #    y = tf.one_hot(action, n_outputs, dtype=tf.int64)
     y = tf.one_hot(action, n_outputs)
-    
+
 with tf.name_scope("loss"):
     cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
                    labels=y, logits=logits)
@@ -109,7 +121,8 @@ with tf.name_scope("train"):
     gradient_placeholders = []
     grads_and_vars_feed = []
     for grad, variable in grads_and_vars:
-        gradient_placeholder = tf.placeholder(tf.float32, shape=grad.get_shape())
+        gradient_placeholder = tf.placeholder(tf.float32,
+                                              shape=grad.get_shape())
         gradient_placeholders.append(gradient_placeholder)
         grads_and_vars_feed.append((gradient_placeholder, variable))
     training_op = optimizer.apply_gradients(grads_and_vars_feed)
@@ -147,7 +160,8 @@ with tf.Session() as sess:
                         [action, gradients],
                         feed_dict={X: [obs]}) # one obs
                 next_move = direction[action_val.item(0)]
-                obs_1, obs_2, done, reward = env.step(next_move[0], next_move[1])
+                obs_1, obs_2, done, reward = env.step(next_move[0],
+                                                      next_move[1])
                 env.render()
 #                if (iteration+1) % 10 == 0:
 #                    env.render()
@@ -175,7 +189,7 @@ with tf.Session() as sess:
         print("mean_gradients", np.mean(decayed_gradients))
         print("Target reached! [" + str(success) + "/" + str(n_games_per_update) + "]")
         success_rate = success/n_games_per_update
-       success_rates.append(success_rate)
+        success_rates.append(success_rate)
         print("Iteration", iteration, "; Success", success_rate)
         print("-----------------------------------------------")
         sess.run(training_op, feed_dict=feed_dict)
